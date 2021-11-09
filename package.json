@@ -1,0 +1,45 @@
+{
+  "name": "strive_blog_api_m5_2_day2",
+  "version": "1.0.0",
+  "type": "module",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "dev": "nodemon -e js -r dotenv/config ./src/server.js",
+    "start": "node ./src/server.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/zukhriddinakhmedov/strive_blog_api_m5_2_day2.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/zukhriddinakhmedov/strive_blog_api_m5_2_day2/issues"
+  },
+  "homepage": "https://github.com/zukhriddinakhmedov/strive_blog_api_m5_2_day2#readme",
+  "dependencies": {
+    "@sendgrid/mail": "^7.5.0",
+    "axios": "^0.24.0",
+    "cloudinary": "^1.27.1",
+    "cors": "^2.8.5",
+    "express": "^4.17.1",
+    "express-list-endpoints": "^6.0.0",
+    "express-validator": "^6.13.0",
+    "fs-extra": "^10.0.0",
+    "http-errors": "^1.8.0",
+    "json2csv": "^5.0.6",
+    "multer": "^1.4.3",
+    "multer-storage-cloudinary": "^4.0.0",
+    "pdfmake": "^0.2.2",
+    "striptags": "^3.2.0",
+    "swagger-ui-express": "^4.1.6",
+    "uniqid": "^5.4.0",
+    "yamljs": "^0.3.0"
+  },
+  "devDependencies": {
+    "dotenv": "^10.0.0",
+    "nodemon": "^2.0.7"
+  }
+}
