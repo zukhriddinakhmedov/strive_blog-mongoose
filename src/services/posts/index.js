@@ -40,7 +40,7 @@ postsRouter.post("/",  async (req, res, next) => {
         const newPost = new BlogPostModel(req.body)
 
         const {_id} = await newPost.save()
-        res.status(2001).send(_id)
+        res.status(201).send(_id)
     } catch (error) {
         next(error)
     }
@@ -61,7 +61,7 @@ postsRouter.get("/:postId", async (req, res, next) => {
 postsRouter.put("/:postId", async (req, res, next) => {
     try {
        const id = req.params.postId
-       const updatedPost = await BlogPostModel.findByIdAndUpdate(id)
+       const updatedPost = await BlogPostModel.findByIdAndUpdate(id, req.body, {new: true})
        
        if(updatedPost) {
            res.send(updatedPost)

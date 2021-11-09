@@ -2,7 +2,6 @@ import express from "express"
 import listEndpoints from "express-list-endpoints"
 import cors from "cors"
 import { join } from "path"
-import authorsRouter from "./services/authors/index.js"
 import postsRouter from "./services/posts/index.js"
 import filesRouter from "./services/files/index.js"
 import { badRequestHandler, unauthorisedErrorHandler, notFoundHandler, internaServerlErrorHandler } from "./errorHandlers.js"
@@ -34,7 +33,6 @@ server.use(express.json())
 
 // ---------------------------ENDPOINTS----------------------
 server.use("/posts", postsRouter)
-server.use("/authors", authorsRouter)
 server.use("/files", filesRouter)
 server.use("/docs", swaggerUI.serve, swaggerUI.setup(yamlDocument))
 // --------------------------ERROR MIDDLEWARES--------------------
