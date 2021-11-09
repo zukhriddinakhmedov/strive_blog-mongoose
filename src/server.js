@@ -8,6 +8,7 @@ import filesRouter from "./services/files/index.js"
 import { badRequestHandler, unauthorisedErrorHandler, notFoundHandler, internaServerlErrorHandler } from "./errorHandlers.js"
 import yaml from "yamljs"
 import swaggerUI from "swagger-ui-express"
+import mongoose from "mongoose"
 
 const server = express()
 
@@ -44,8 +45,18 @@ server.use(internaServerlErrorHandler)
 
 const port = process.env.PORT
 
-console.table(listEndpoints(server))
+mongoose.connect(process.env.MONGO_CONNECTION)
 
-server.listen(port, () => {
-    console.log("Server running on port", port)
+mongoose.connection.on("connected", () => {
+    console.log("Mongo Connected")
+
+    server.listen(port, () => {
+        console.table(listEndpoints(server))
+
+        console.log(`Server is running on port ${port}`)
+    })
+})
+
+mongoose.connection.on("error", err => {
+    console.log(err)
 })
