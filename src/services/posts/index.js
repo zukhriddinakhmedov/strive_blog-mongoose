@@ -61,7 +61,7 @@ postsRouter.get("/:postId", async (req, res, next) => {
 postsRouter.put("/:postId", async (req, res, next) => {
     try {
        const id = req.params.postId
-       const updatedPost = await BlogPostModel.findByIdAndUpdate(id, req.body, {new: true})
+       const updatedPost = await BlogPostModel.findByIdAndUpdate(id, req.body, {new: true} )
        
        if(updatedPost) {
            res.send(updatedPost)
