@@ -40,7 +40,7 @@ postsRouter.post("/",  async (req, res, next) => {
         const newPost = new BlogPostModel(req.body)
 
         const {_id} = await newPost.save()
-        res.status(201).send(_id)
+        res.status(201).send({_id})
     } catch (error) {
         next(error)
     }
@@ -55,6 +55,7 @@ postsRouter.get("/:postId", async (req, res, next) => {
             next(createHttpError(404, `Post with id ${id} is not found`))
         }
     } catch (error) {
+        console.log("Error", error)
         next(error)
     }
 })
