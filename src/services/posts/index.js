@@ -1,19 +1,17 @@
 import express from "express"
-import uniqid from "uniqid"
 import createHttpError from "http-errors"
-import { validationResult } from "express-validator"
-import { postsValidation } from "./validation.js"
-import { readPosts, writePost } from "../../library/fs-tools.js"
 import { pipeline } from "stream"
 import { getPdfReadableStream } from "../../library/pdf-tools.js"
 import { sendNewPostEmail } from "../../library/email-tools.js"
+import BlogPostModel from "./schema.js"
 
 
 const postsRouter = express.Router()
 
 postsRouter.get("/", async (req, res, next) => {
     try {
-        const posts = await readPosts()
+        const posts = await BlogPostModel.find()
+
         res.send(posts)
     } catch (error) {
         next(error)
@@ -37,33 +35,24 @@ postsRouter.get("/:id/pdf", async (req, res, next) => {
         next(error)
     }
 })
-postsRouter.post("/", postsValidation, async (req, res, next) => {
+postsRouter.post("/",  async (req, res, next) => {
     try {
-        const notValidated = validationResult(req)
+        const newPost = new BlogPostModel(req.body)
 
-        if (!notValidated.isEmpty()) {
-            next(createHttpError(400, { notValidated }))
-        } else {
-            const newPost = { ...req.body, createdAt: new Date(), id: uniqid() }
-            const posts = await readPosts()
-
-            posts.push(newPost)
-
-            await writePost(posts)
-            res.status(201).send({ id: newPost.id })
-        }
+        const {_id} = await newPost.save()
+        res.status(2001).send(_id)
     } catch (error) {
         next(error)
     }
 })
 postsRouter.get("/:postId", async (req, res, next) => {
     try {
-        const posts = await readPosts()
-        const post = posts.find(post => post.id === req.params.postId)
-        if (post) {
+        const id = req.params.postId
+        const post = await BlogPostModel.findById(id)
+        if(post) {
             res.send(post)
-        } else {
-            next(createHttpError(404), `Post with id  of ${req.params.postId} is not found`)
+        }else{
+            next(createHttpError(404, `Post with id ${id} is not found`))
         }
     } catch (error) {
         next(error)
@@ -71,30 +60,27 @@ postsRouter.get("/:postId", async (req, res, next) => {
 })
 postsRouter.put("/:postId", async (req, res, next) => {
     try {
-        const posts = await readPosts()
-        const index = posts.findIndex(post => post.id === req.params.postId)
-        const postToEdit = posts[index]
-
-        const updatedParams = req.body
-        const updatedPost = { ...postToEdit, ...updatedParams }
-
-        posts[index] = updatedPost
-
-        await writePost(posts)
-        res.send(updatedPost)
+       const id = req.params.postId
+       const updatedPost = await BlogPostModel.findByIdAndUpdate(id)
+       
+       if(updatedPost) {
+           res.send(updatedPost)
+       }else{
+           next(createHttpError(404, `Post with id ${id} is not found`))
+       }
     } catch (error) {
         next(error)
     }
 })
 postsRouter.delete("/:postId", async (req, res, next) => {
     try {
-        const posts = await readPosts()
-        const notdeletedPost = posts.filter(post => post.id !== req.params.postId)
-
-        await writePost(notdeletedPost)
-
-        res.status(204).send()
-
+        const id = req.params.postId
+        const deletedPost = await BlogPostModel.findByIdAndDelete(id)
+        if(deletedPost) {
+            res.status(204).send()
+        }else{
+            next(createHttpError(404, `Post with id ${id} is not found`))
+        }
     } catch (error) {
         next(error)
     }
