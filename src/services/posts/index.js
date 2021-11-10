@@ -173,4 +173,21 @@ postsRouter.put("/:postId/comments/:commentId", async (req,res,next) => {
     }
 })
 
+postsRouter.delete("/:postId/comments/:commentId", async (req,res,next) => {
+    try {
+        const postToEdit = await BlogPostModel.findByIdAndUpdate(
+            req.params.postId,
+            {$pull: {comment: {_id: req.params.commentId}}},
+            {new: true}
+        )
+        if(postToEdit) {
+            res.send(postToEdit)
+        }else{
+            next(createHttpError(404, `Post with id ${req.params.postId} is not found`))
+        }
+    } catch (error) {
+        next(error)
+    }
+})
+
 export default postsRouter
