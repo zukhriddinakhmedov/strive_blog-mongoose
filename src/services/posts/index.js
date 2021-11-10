@@ -151,4 +151,26 @@ postsRouter.get("/:postId/comments/:commentId", async (req,res,next) => {
     }
 })
 
+postsRouter.put("/:postId/comments/:commentId", async (req,res,next) => {
+    try {
+        const post = await BlogPostModel.findById(req.params.postId)
+
+        if(post) {
+            const index = post.comment.findIndex(p => p._id.toString() === req.params.commentId)
+
+            if(index !== -1) {
+                post.comment[index] = {... post.comment[index].toObject(), ...req.body}
+                await post.save()
+                res.send(post)
+            }else{
+                next(createHttpError(404, `Comment with id ${req.params.commentId} is not found`))
+            }
+        }else{
+            next(createHttpError(404, `Post with id ${req.params.postId} is not found`))
+        }
+    } catch (error) {
+        next(error)
+    }
+})
+
 export default postsRouter
