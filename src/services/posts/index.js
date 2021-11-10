@@ -5,15 +5,22 @@ import { getPdfReadableStream } from "../../library/pdf-tools.js"
 import { sendNewPostEmail } from "../../library/email-tools.js"
 import BlogPostModel from "./schema.js"
 import CommentModel from "../comments/schema.js"
+import q2m from "query-to-mongo"
 
 
 const postsRouter = express.Router()
 
 postsRouter.get("/", async (req, res, next) => {
     try {
-        const posts = await BlogPostModel.find()
+        const mongoQuery = q2m(req.query)
+        console.log(mongoQuery)
+        const total = await BlogPostModel.countDocuments(mongoQuery.criteria)
+        const posts = await BlogPostModel.find(mongoQuery.criteria)
+        .skip(mongoQuery.options.skip)
+        .limit(mongoQuery.options.limit)
+        .sort(mongoQuery.options.sort)
 
-        res.send(posts)
+        res.send({links: mongoQuery.links("/posts", total ), pageTotal: Math.ceil(total/ mongoQuery.options.limit), total, posts})
     } catch (error) {
         next(error)
     }
