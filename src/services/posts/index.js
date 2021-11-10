@@ -4,6 +4,7 @@ import { pipeline } from "stream"
 import { getPdfReadableStream } from "../../library/pdf-tools.js"
 import { sendNewPostEmail } from "../../library/email-tools.js"
 import BlogPostModel from "./schema.js"
+import CommentModel from "../comments/schema.js"
 
 
 const postsRouter = express.Router()
@@ -98,5 +99,44 @@ postsRouter.post("/email", async (req, res, next) => {
         next(error)
     }
 })
+
+postsRouter.get("/:postId/comments",async (req,res,next) => {
+    try {
+        const posts = await BlogPostModel.findById(req.params.postId)
+        if(posts) {
+            res.send(posts)
+        }else{
+            next(createHttpError(404, `Blog post with id ${req.params.postId} is not found`))
+        }
+    } catch (error) {
+        next(error)
+    }
+})
+
+postsRouter.post("/:postId/comments", async (req,res,next) => {
+        try {
+            const commented = await CommentModel.findById(req.body.commentId, {_id: 0} )
+
+            if(commented) {
+                const commentToPost = {...commented.toObject(), commentDate: new Date() }
+
+                const updatedPost = await BlogPostModel.findByIdAndUpdate(
+                    req.params.postId,
+                    {$push: {comments: commentToPost} },
+                    {new: true}
+                )
+                if(updatedPost){
+                    res.send(updatedPost)
+                }else{
+                    next(createHttpError(404, `Blog post with ${req.params.postId} is not found`))
+                }
+            }else{
+                next(createHttpError(404, `Comment with id ${req.body.commentId} is not found`))
+            }
+        } catch (error) {
+            next(error)
+        }
+    } 
+)
 
 export default postsRouter
