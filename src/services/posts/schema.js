@@ -10,20 +10,16 @@ const BlogPostsSchema = new Schema({
         value: {type: Number},
         unit: {type: String}
     },
-    author: {
-        name: {type: String, required: true},
-        avatar: {type: String, required: true}
-    },
+    author: [{type: Schema.Types.ObjectId, ref: "Author"}],
     content: {type: String, required: true},
     comment: [
         {
             text: {type: String},
             rank: {type: Number},
-            commentDate: {type: Date}
+            commentDate: {type: Date},
         }
     ]
 },
-
 {
     timestamps: true
 }

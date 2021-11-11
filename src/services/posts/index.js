@@ -19,7 +19,7 @@ postsRouter.get("/", async (req, res, next) => {
         .skip(mongoQuery.options.skip)
         .limit(mongoQuery.options.limit)
         .sort(mongoQuery.options.sort)
-
+        .populate({path: "author"})
         res.send({links: mongoQuery.links("/posts", total ), pageTotal: Math.ceil(total/ mongoQuery.options.limit), total, posts})
     } catch (error) {
         next(error)
@@ -57,6 +57,7 @@ postsRouter.get("/:postId", async (req, res, next) => {
     try {
         const id = req.params.postId
         const post = await BlogPostModel.findById(id)
+        .populate({path: "author"})
         if(post) {
             res.send(post)
         }else{
