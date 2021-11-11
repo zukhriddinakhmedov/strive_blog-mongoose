@@ -8,6 +8,7 @@ import { badRequestHandler, unauthorisedErrorHandler, notFoundHandler, internaSe
 import yaml from "yamljs"
 import swaggerUI from "swagger-ui-express"
 import mongoose from "mongoose"
+import authorsRouter from "./services/authors/index.js"
 
 const server = express()
 
@@ -33,6 +34,7 @@ server.use(express.json())
 
 // ---------------------------ENDPOINTS----------------------
 server.use("/posts", postsRouter)
+server.use("/authors", authorsRouter)
 server.use("/files", filesRouter)
 server.use("/docs", swaggerUI.serve, swaggerUI.setup(yamlDocument))
 // --------------------------ERROR MIDDLEWARES--------------------
