@@ -16,9 +16,9 @@ postsRouter.get("/", async (req, res, next) => {
         console.log(mongoQuery)
         const total = await BlogPostModel.countDocuments(mongoQuery.criteria)
         const posts = await BlogPostModel.find(mongoQuery.criteria)
+        .sort(mongoQuery.options.sort)
         .skip(mongoQuery.options.skip)
         .limit(mongoQuery.options.limit)
-        .sort(mongoQuery.options.sort)
         .populate({path: "author"})
         res.send({links: mongoQuery.links("/posts", total ), pageTotal: Math.ceil(total/ mongoQuery.options.limit), total, posts})
     } catch (error) {
